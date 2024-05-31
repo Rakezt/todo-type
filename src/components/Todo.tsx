@@ -1,5 +1,10 @@
 import React, { useReducer, useState } from "react";
-import { Action, State, todoReducer } from "../reducer/todoReducer";
+import {
+  Action,
+  State,
+  todoReducer,
+  initialState,
+} from "../reducer/todoReducer";
 import {
   Box,
   Button,
@@ -12,9 +17,7 @@ import {
 } from "@mui/material";
 import { EventNote } from "@mui/icons-material";
 
-const initialState: State = [];
-
-const Todo = () => {
+const Todo: React.FC = () => {
   const [input, setInput] = useState<string>("");
   const [state, dispatch] = useReducer<React.Reducer<State, Action>>(
     todoReducer,
@@ -40,6 +43,37 @@ const Todo = () => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") addBtnHandler();
   };
+
+  const handleLogin = () => {
+    dispatch({ type: "LOGIN" });
+  };
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+  };
+
+  if (!state.isAuthenticated) {
+    return (
+      <>
+        <Container
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Card sx={{ padding: "2rem" }}>
+            <Typography variant="h6">
+              Please login to see your todo list
+            </Typography>
+            <Button variant="contained" onClick={handleLogin}>
+              Log In
+            </Button>
+          </Card>
+        </Container>
+      </>
+    );
+  }
 
   return (
     <Container
@@ -83,7 +117,15 @@ const Todo = () => {
         >
           Add Todo
         </Button>
-        {state.map((todos, index) => (
+
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "grey", margin: "1rem" }}
+          onClick={handleLogout}
+        >
+          Log Out
+        </Button>
+        {state.todos.map((todos, index) => (
           <>
             <List key={todos.id}>
               <ListItem
